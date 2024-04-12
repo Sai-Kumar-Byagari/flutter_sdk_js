@@ -38,7 +38,7 @@ flutter:
   assets:
     - assets/
 #    - assets/images/
-#    - assets/cms_sdk_js/index.js
+#    - assets/cms_sdk_js/cms_sdk_js
 
   #
   # For details regarding assets in packages, see

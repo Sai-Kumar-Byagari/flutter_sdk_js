@@ -24,16 +24,33 @@ class _MPinLoginPageState extends State<MPinLoginPage> {
 
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
-  JavascriptRuntime runtime = getJavascriptRuntime();
-  dynamic path = rootBundle.loadString("assets/cms_sdk_js/index.js");
+  // JavascriptRuntime runtime = getJavascriptRuntime();
+  // dynamic path = rootBundle.loadString("assets/cms_sdk_js/index.js");
+
+  late JavascriptRuntime runtime;
+  late String jsFileContent;
+
+  Future<void> loadJsFile() async {
+    jsFileContent = await rootBundle.loadString('cms_sdk_js/cms-client.js');
+    runtime = getJavascriptRuntime();
+  }
 
   Future<void> _login() async {
     String mpin = pinDigits.join();
 
-    final jsFile = await path;
-    JsEvalResult response = runtime.evaluate("""${jsFile}cmsUserAuthenticate($mpin)""");
+    // final jsFile = await path;
+    // JsEvalResult response = runtime.evaluate("""${jsFile}cmsUserAuthenticate($mpin)""");
+    //
+    // print(response);
 
-    print(response);
+    if (jsFileContent.isNotEmpty) {
+      JsEvalResult response = runtime.evaluate("""$jsFileContent
+          const cmsClient = new CmsClient();
+          cmsClient.authenticate('+919700000001', '$mpin');
+          """);
+      print(response);
+    }
+
     // final response = await apiService.verifyMpin(mpin);
     // Map<String, dynamic> data = response.data;
 
@@ -134,6 +151,7 @@ class _MPinLoginPageState extends State<MPinLoginPage> {
   @override
   void initState() {
     super.initState();
+    loadJsFile();
     pinControllerOne = TextEditingController();
     pinControllerTwo = TextEditingController();
     pinControllerThree = TextEditingController();
